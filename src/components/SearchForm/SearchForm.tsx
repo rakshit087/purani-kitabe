@@ -3,19 +3,16 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-
 import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { search } from "@/actions/search";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   query: z.string().min(2, {
@@ -23,15 +20,20 @@ const formSchema = z.object({
   }),
 });
 
-export function SearchForm() {
+interface SearchFormI {
+  value?: string;
+}
+
+export function SearchForm(props: SearchFormI) {
+  const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      query: "",
+      query: props.value || "",
     },
   });
   function onSubmit(values: z.infer<typeof formSchema>) {
-    search(values.query);
+    router.push(`/search?q=${encodeURIComponent(values.query)}`);
   }
   return (
     <Form {...form}>

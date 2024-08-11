@@ -1,6 +1,5 @@
 import { Badge } from "@/components/ui/badge";
 import { SearchForm } from "@/components/SearchForm/SearchForm";
-import { ThemeToggle } from "@/components/ThemeToggle/ThemeToggle";
 
 const popularSearches: string[] = [
   "Harry Potter",
