@@ -1,11 +1,6 @@
-"use client";
-
-import { search } from "@/actions/search";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { SearchForm } from "@/components/ui/SearchForm/SearchForm";
-import { SunIcon } from "@radix-ui/react-icons";
+import { SearchForm } from "@/components/SearchForm/SearchForm";
+import { ThemeToggle } from "@/components/ThemeToggle/ThemeToggle";
 
 const popularSearches: string[] = [
   "Harry Potter",
@@ -16,10 +11,9 @@ const popularSearches: string[] = [
 export default function Home() {
   return (
     <main className="flex h-screen flex-col items-center justify-center px-4 md:px-6 lg:px-8">
-      <SunIcon className="absolute top-10 right-10" />
       <div className="max-w-3xl w-full">
         <h1 className="mb-1 md:mb-4 text-2xl md:text-4xl font-serif">
-          <strong>Kitab</strong> Search
+          <strong>पुरानी</strong> Kitabay
         </h1>
         <SearchForm />
         <div className="mt-8">
