@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider/ThemeProvider";
 import { ThemeToggle } from "@/components/ThemeToggle/ThemeToggle";
+import Link from "next/link";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -29,6 +30,19 @@ export default function RootLayout({
             <ThemeToggle />
           </div>
           {children}
+          <footer className="py-4 text-center">
+            <p className="text-xs">
+              Made for the ❤️ of books by{" "}
+              <Link
+                href="https://twitter.com/rakshit087"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline"
+              >
+                Rakshit
+              </Link>
+            </p>
+          </footer>
         </ThemeProvider>
       </body>
     </html>
