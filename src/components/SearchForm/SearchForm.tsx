@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
+import { Spinner } from "../Spinner/Spinner";
 
 const formSchema = z.object({
   query: z.string().min(2, {
@@ -22,6 +23,7 @@ const formSchema = z.object({
 
 interface SearchFormI {
   value?: string;
+  loading?: boolean;
 }
 
 export function SearchForm(props: SearchFormI) {
@@ -50,13 +52,16 @@ export function SearchForm(props: SearchFormI) {
                 <Input
                   placeholder="Search by Title, Author or ISBN"
                   {...field}
+                  disabled={props.loading}
                 />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit">Search</Button>
+        <Button type="submit" disabled={props.loading} className="w-24">
+          {props.loading ? "..." : "Search"}
+        </Button>
       </form>
     </Form>
   );

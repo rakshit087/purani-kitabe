@@ -7,7 +7,7 @@ interface PopularSearchBadgeI {
   q: string;
 }
 
-export const PopularSearchBadge = (props: PopularSearchBadgeI) => {
+export function PopularSearchBadge(props: PopularSearchBadgeI) {
   const router = useRouter();
   return (
     <Badge
@@ -19,4 +19,4 @@ export const PopularSearchBadge = (props: PopularSearchBadgeI) => {
       {props.q}
     </Badge>
   );
-};
+}
