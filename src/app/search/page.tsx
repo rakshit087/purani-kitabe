@@ -1,4 +1,5 @@
 import { search } from "@/actions/search";
+import { BookCard } from "@/components/BookCard/BookCard";
 import { SearchForm } from "@/components/SearchForm/SearchForm";
 
 export default async function SearchResults({
@@ -9,12 +10,24 @@ export default async function SearchResults({
   const query = searchParams.q;
   const result = await search(query);
   return (
-    <main className="flex h-[100dvh] flex-col items-center py-24 px-4 md:px-6 lg:px-8">
-      <div className="max-w-3xl w-full bg-none">
-        <h1 className="mb-1 md:mb-4 text-2xl md:text-4xl font-serif">
+    <main className="flex min-h-[100dvh] flex-col items-center py-16 lg:py-24 px-4 md:px-6 lg:px-8">
+      <div className="max-w-3xl w-full">
+        <h1 className="mb-4 text-2xl md:text-4xl font-serif">
           <strong>पुरानी</strong> Kitabay
         </h1>
-        <SearchForm value={searchParams.q} />
+        <SearchForm />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 w-full mt-16">
+          {result.map((book, index) => {
+            return (
+              <BookCard
+                key={index}
+                title={book.title}
+                author={book.author}
+                price={book.price}
+              />
+            );
+          })}
+        </div>
       </div>
     </main>
   );

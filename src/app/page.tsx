@@ -10,9 +10,9 @@ const popularSearches: string[] = [
 
 export default function Home() {
   return (
-    <main className="flex h-[100dvh] flex-col items-center justify-center px-4 md:px-6 lg:px-8">
+    <main className="flex h-[92dvh] md:h-[95dvh] flex-col items-center justify-center px-4 md:px-6 lg:px-8">
       <div className="max-w-3xl w-full">
-        <h1 className="mb-1 md:mb-4 text-2xl md:text-4xl font-serif">
+        <h1 className="mb-4 text-2xl md:text-4xl font-serif">
           <strong>पुरानी</strong> Kitabay
         </h1>
         <SearchForm />
