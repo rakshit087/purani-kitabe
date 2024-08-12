@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
-import { Spinner } from "../Spinner/Spinner";
 
 const formSchema = z.object({
   query: z.string().min(2, {
