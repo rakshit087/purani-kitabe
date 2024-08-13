@@ -15,17 +15,10 @@ export default async function SearchResults({
         <h1 className="mb-4 text-2xl md:text-4xl font-serif">
           <strong>पुरानी</strong> Kitabay
         </h1>
-        <SearchForm />
+        <SearchForm value={query} />
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 w-full mt-16">
           {result.map((book, index) => {
-            return (
-              <BookCard
-                key={index}
-                title={book.title}
-                author={book.author}
-                price={book.price}
-              />
-            );
+            return <BookCard key={index} book={book} />;
           })}
         </div>
       </div>
