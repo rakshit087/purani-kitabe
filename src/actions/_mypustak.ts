@@ -30,7 +30,7 @@ const payload = (query: string, page: number) => {
   };
 };
 export const searchMyPustak = async (query: string) => {
-  const url = `https://g4z9t7cmykvowrnup-1.a1.typesense.net/multi_search?x-typesense-api-key=${process.env["TYPESENSE-API-KEY"]}`;
+  const url = `https://g4z9t7cmykvowrnup-1.a1.typesense.net/multi_search?x-typesense-api-key=${process.env["TYPESENSE_API_KEY"]}`;
   const responseObj = await fetch(url, {
     method: "POST",
     body: JSON.stringify(payload(query, 1)),
