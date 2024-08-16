@@ -14,7 +14,7 @@ const payload = (query: string, page: number) => {
         min_len_1typo: 2,
         split_join_tokens: "always",
         typo_tokens_threshold: 10,
-        per_page: 10,
+        per_page: 50,
         sort_by: "num_is_out_of_stack:asc",
         pre_segmented_query: true,
         drop_tokens_threshold: 0,
