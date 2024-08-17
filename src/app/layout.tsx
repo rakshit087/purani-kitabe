@@ -8,8 +8,9 @@ import Link from "next/link";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "KitabSearch",
-  description: "Search for second hand books",
+  title: "पुरानी Kitabe 📚",
+  description:
+    "Search for second hand books in India, across various sellers like MyPustak, 99Cart and Bookchor.",
 };
 
 export default function RootLayout({
