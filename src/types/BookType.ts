@@ -5,4 +5,5 @@ export type Book = {
   productUrl: string;
   bookCover: string;
   source: string;
+  isbn?: string;
 };

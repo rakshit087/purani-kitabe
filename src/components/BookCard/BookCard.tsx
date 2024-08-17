@@ -24,6 +24,7 @@ export function BookCard({ book }: BookCardI) {
           <p className="text-xs">By {book.author}</p>
           <p className="my-2 text-lg">₹{book.price}</p>
           <p className="text-xs">Source: {book.source || "Unknown"}</p>
+          <p className="text-xs mt-1">ISBN: {book.isbn || "Unknown"}</p>
         </div>
         <div className="flex items-center gap-2 mt-4">
           <Link href={book.productUrl} target="_blank" className="w-full">

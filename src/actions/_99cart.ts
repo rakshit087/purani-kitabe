@@ -18,6 +18,7 @@ export const search99Cart = async (query: string) => {
           book.isbn
         }/${book.name.replace(/ /g, "-")}`;
         const bookCover = book.image;
+        const isbn = book.isbn;
         const source = "99Cart";
         if (book.countInStock > 0) {
           return {
@@ -26,6 +27,7 @@ export const search99Cart = async (query: string) => {
             price,
             productUrl,
             bookCover,
+            isbn,
             source,
           };
         }

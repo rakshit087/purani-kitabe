@@ -10,8 +10,9 @@ export const search = async (query: string) => {
   const ninetyNineCartBooks: Book[] = await search99Cart(query);
   const books = [...myPustakBooks, ...ninetyNineCartBooks];
   const idx = lunr(function () {
+    this.field("isbn", { boost: 15 });
     this.field("title", { boost: 10 });
-    this.field("author", { boost: 10 });
+    this.field("author", { boost: 5 });
     this.field("productUrl");
     this.ref("id");
     books.forEach((book, i) => {

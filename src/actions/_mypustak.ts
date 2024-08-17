@@ -47,6 +47,7 @@ export const searchMyPustak = async (query: string) => {
       const price = book.document.price;
       const productUrl = book.document.productUrl;
       const bookCover = book.document.imageUrl;
+      const isbn = book.document.isbn;
       const source = "MyPustak";
       if (book.document.isOutOfStock === "N") {
         return {
@@ -55,6 +56,7 @@ export const searchMyPustak = async (query: string) => {
           price,
           productUrl,
           bookCover,
+          isbn,
           source,
         };
       }
