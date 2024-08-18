@@ -4,24 +4,12 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "img.bookchor.com",
+        hostname: "*",
         port: "",
         pathname: "**",
       },
       {
-        protocol: "https",
-        hostname: "d1f2zer3rm8sjv.cloudfront.net",
-        port: "",
-        pathname: "**",
-      },
-      {
-        protocol: "https",
-        hostname: "*.amazonaws.com",
-        port: "",
-        pathname: "**",
-      },
-      {
-        protocol: "https",
+        protocol: "http",
         hostname: "*",
         port: "",
         pathname: "**",

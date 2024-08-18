@@ -6,8 +6,8 @@ import { search99Cart } from "./_99cart";
 import lunr from "lunr";
 
 export const search = async (query: string) => {
-  const myPustakBooks: Book[] = await searchMyPustak(query);
-  const ninetyNineCartBooks: Book[] = await search99Cart(query);
+  const myPustakBooks: Book[] = (await searchMyPustak(query)) || [];
+  const ninetyNineCartBooks: Book[] = (await search99Cart(query)) || [];
   const books = [...myPustakBooks, ...ninetyNineCartBooks];
   const idx = lunr(function () {
     this.field("isbn", { boost: 15 });
