@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import { Button } from "../ui/button";
 import {
@@ -16,7 +18,17 @@ export function BookCard({ book }: BookCardI) {
   return (
     <div className="flex md:flex-col gap-4 md:items-center w-full">
       <div className="min-h-[175px] min-w-[150px] md:h-[300px] md:w-full rounded-xl flex justify-center items-center">
-        <Image alt={book.title} src={book.bookCover} width={150} height={175} />
+        <Image
+          loader={({ src }) => src}
+          src={book.bookCover ? book.bookCover : "/images/no-thumbnail.jpg"}
+          alt={book.title}
+          onError={(event: any) => {
+            event.target.id = "/images/no-thumbnail.jpg";
+            event.target.srcset = "/images/no-thumbnail.jpg";
+          }}
+          width={150}
+          height={175}
+        />
       </div>
       <div className="flex-1 md:w-full flex flex-col justify-between">
         <div>
