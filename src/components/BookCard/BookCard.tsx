@@ -20,11 +20,17 @@ export function BookCard({ book }: BookCardI) {
       <div className="min-h-[175px] min-w-[150px] md:h-[300px] md:w-full rounded-xl flex justify-center items-center">
         <Image
           loader={({ src }) => src}
-          src={book.bookCover ? book.bookCover : "/images/no-thumbnail.jpg"}
+          src={
+            book.bookCover
+              ? book.bookCover
+              : "https://placehold.co/600x700?text=Book+Cover+Not+Found"
+          }
           alt={book.title}
           onError={(event: any) => {
-            event.target.id = "/images/no-thumbnail.jpg";
-            event.target.srcset = "/images/no-thumbnail.jpg";
+            event.target.id =
+              "https://placehold.co/600x700?text=Book+Cover+Not+Found";
+            event.target.srcset =
+              "https://placehold.co/600x700?text=Book+Cover+Not+Found";
           }}
           width={150}
           height={175}
