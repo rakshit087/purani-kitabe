@@ -4,11 +4,13 @@ import { Book } from "@/types/BookType";
 import { searchMyPustak } from "./_mypustak";
 import { search99Cart } from "./_99cart";
 import lunr from "lunr";
+import { searchLockTheBox } from "./_lockthebox";
 
 export const search = async (query: string) => {
   const myPustakBooks: Book[] = (await searchMyPustak(query)) || [];
   const ninetyNineCartBooks: Book[] = (await search99Cart(query)) || [];
-  const books = [...myPustakBooks, ...ninetyNineCartBooks];
+  const lockTheBoxBooks = (await searchLockTheBox(query)) || [];
+  const books = [...myPustakBooks, ...ninetyNineCartBooks, ...lockTheBoxBooks];
   const idx = lunr(function () {
     this.field("isbn", { boost: 15 });
     this.field("title", { boost: 10 });
