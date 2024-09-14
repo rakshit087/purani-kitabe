@@ -42,7 +42,7 @@ export function BookCard({ book }: BookCardI) {
           <p className="text-xs">By {book.author}</p>
           <p className="my-2 text-lg">
             {book.source === "Lock The Box"
-              ? "Price: Box Based"
+              ? "~150 (Box Based)"
               : "₹" + book.price}
           </p>
           <p className="text-xs">Source: {book.source || "Unknown"}</p>
