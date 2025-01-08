@@ -8,36 +8,89 @@ import { searchLockTheBox } from "./_lockthebox";
 import { searchSecondHandBooksIndia } from "./_secondHandBooksIndia";
 
 export const search = async (query: string) => {
-  const myPustakBooks: Book[] = (await searchMyPustak(query)) || [];
-  const ninetyNineCartBooks: Book[] = (await search99Cart(query)) || [];
-  const lockTheBoxBooks = (await searchLockTheBox(query)) || [];
-  const secondHandBooksIndia = (await searchSecondHandBooksIndia(query)) || [];
-  const books = [
-    ...myPustakBooks,
-    ...ninetyNineCartBooks,
-    ...lockTheBoxBooks,
-    ...secondHandBooksIndia,
-  ];
-  const idx = lunr(function () {
-    this.field("isbn", { boost: 15 });
-    this.field("title", { boost: 10 });
-    this.field("author", { boost: 5 });
-    this.ref("id");
-    books.forEach((book, i) => {
-      this.add({ ...book, id: i.toString() });
-    });
-  });
-  const searchResults = idx.search(query);
-  const sortedBooks = searchResults
-    .map((result) => ({
-      ...books[parseInt(result.ref)],
-      score: result.score,
-    }))
-    .sort((a, b) => {
-      if (Math.abs(a.score - b.score) > 0.25) {
-        return b.score - a.score;
-      }
-      return a.price - b.price;
-    });
-  return sortedBooks;
+  if (!query) {
+    console.error("No search query provided");
+    return [];
+  }
+
+  try {
+    // Fetch books from all sources in parallel
+    const [
+      myPustakBooks,
+      ninetyNineCartBooks,
+      lockTheBoxBooks,
+      secondHandBooksIndia,
+    ] = await Promise.all([
+      searchMyPustak(query).catch((err) => {
+        console.error("Error fetching from MyPustak:", err);
+        return [];
+      }),
+      search99Cart(query).catch((err) => {
+        console.error("Error fetching from 99Cart:", err);
+        return [];
+      }),
+      searchLockTheBox(query).catch((err) => {
+        console.error("Error fetching from Lock The Box:", err);
+        return [];
+      }),
+      searchSecondHandBooksIndia(query).catch((err) => {
+        console.error("Error fetching from Second Hand Books India:", err);
+        return [];
+      }),
+    ]);
+
+    const books = [
+      ...myPustakBooks,
+      ...ninetyNineCartBooks,
+      ...lockTheBoxBooks,
+      ...secondHandBooksIndia,
+    ];
+
+    if (books.length === 0) {
+      console.warn("No books found from any source");
+      return [];
+    }
+
+    try {
+      const idx = lunr(function () {
+        this.field("isbn", { boost: 15 });
+        this.field("title", { boost: 10 });
+        this.field("author", { boost: 5 });
+        this.ref("id");
+        books.forEach((book, i) => {
+          this.add({ ...book, id: i.toString() });
+        });
+      });
+
+      const searchResults = idx.search(query);
+
+      const sortedBooks = searchResults
+        .map((result) => {
+          try {
+            return {
+              ...books[parseInt(result.ref)],
+              score: result.score,
+            };
+          } catch (err) {
+            console.error("Error mapping search result:", err);
+            return null;
+          }
+        })
+        .filter((book): book is Book & { score: number } => book !== null)
+        .sort((a, b) => {
+          if (Math.abs(a.score - b.score) > 0.25) {
+            return b.score - a.score;
+          }
+          return a.price - b.price;
+        });
+
+      return sortedBooks;
+    } catch (err) {
+      console.error("Error during search indexing/sorting:", err);
+      return books; // Return unsorted results if search indexing fails
+    }
+  } catch (err) {
+    console.error("Error in search function:", err);
+    return [];
+  }
 };
