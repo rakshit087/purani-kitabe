@@ -14,30 +14,40 @@ export const search = async (query: string) => {
   }
 
   try {
-    // Fetch books from all sources in parallel
-    const [
-      myPustakBooks,
-      ninetyNineCartBooks,
-      lockTheBoxBooks,
-      secondHandBooksIndia,
-    ] = await Promise.all([
-      searchMyPustak(query).catch((err) => {
-        console.error("Error fetching from MyPustak:", err);
-        return [];
-      }),
-      search99Cart(query).catch((err) => {
-        console.error("Error fetching from 99Cart:", err);
-        return [];
-      }),
-      searchLockTheBox(query).catch((err) => {
-        console.error("Error fetching from Lock The Box:", err);
-        return [];
-      }),
-      searchSecondHandBooksIndia(query).catch((err) => {
-        console.error("Error fetching from Second Hand Books India:", err);
-        return [];
-      }),
-    ]);
+    // Fetch books from all sources in parallel with improved error handling
+    let myPustakBooks: Book[] = [];
+    let ninetyNineCartBooks: Book[] = [];
+    let lockTheBoxBooks: Book[] = [];
+    let secondHandBooksIndia: Book[] = [];
+
+    try {
+      [
+        myPustakBooks,
+        ninetyNineCartBooks,
+        lockTheBoxBooks,
+        secondHandBooksIndia,
+      ] = await Promise.all([
+        searchMyPustak(query).catch((err) => {
+          console.error("Error fetching from MyPustak:", err);
+          return [];
+        }),
+        search99Cart(query).catch((err) => {
+          console.error("Error fetching from 99bookscart:", err);
+          return [];
+        }),
+        searchLockTheBox(query).catch((err) => {
+          console.error("Error fetching from Lock The Box:", err);
+          return [];
+        }),
+        searchSecondHandBooksIndia(query).catch((err) => {
+          console.error("Error fetching from Second Hand Books India:", err);
+          return [];
+        }),
+      ]);
+    } catch (err) {
+      console.error("Error in Promise.all for book sources:", err);
+      // Continue with any results we have
+    }
 
     const books = [
       ...myPustakBooks,
