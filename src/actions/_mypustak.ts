@@ -37,7 +37,7 @@ export const searchMyPustak = async (query: string) => {
   }
 
   try {
-    const url = `https://g4z9t7cmykvowrnup-1.a1.typesense.net/multi_search?x-typesense-api-key=${process.env["TYPESENSE_API_KEY"]}`;
+    const url = `https://${process.env["TYPESENSE_URL"]}/multi_search?x-typesense-api-key=${process.env["TYPESENSE_API_KEY"]}`;
 
     if (!process.env["TYPESENSE_API_KEY"]) {
       throw new Error("Typesense API key not found");
@@ -97,7 +97,7 @@ export const searchMyPustak = async (query: string) => {
             return null;
           }
         })
-        .filter((book: Book | null): book is Book => book !== null)
+        .filter((book: Book | null): book is Book => book !== null),
     );
     return res;
   } catch (error) {
