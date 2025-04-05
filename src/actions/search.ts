@@ -2,15 +2,20 @@
 
 import { Book } from "@/types/BookType";
 import { searchMyPustak } from "./_mypustak";
-import { search99Cart } from "./_99cart";
 import lunr from "lunr";
 import { searchLockTheBox } from "./_lockthebox";
 import { searchSecondHandBooksIndia } from "./_secondHandBooksIndia";
+import redis from "@/lib/redis";
 
 export const search = async (query: string) => {
   if (!query) {
     console.error("No search query provided");
     return [];
+  }
+
+  const cachedResults = await redis.get(`search:${query}`);
+  if (cachedResults) {
+    return JSON.parse(cachedResults);
   }
 
   try {
@@ -83,6 +88,8 @@ export const search = async (query: string) => {
           }
           return a.price - b.price;
         });
+
+      await redis.set(`search:${query}`, JSON.stringify(sortedBooks), "EX", 86400);
 
       return sortedBooks;
     } catch (err) {
