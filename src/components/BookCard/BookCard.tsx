@@ -2,11 +2,7 @@
 
 import Image from "next/image";
 import { Button } from "../ui/button";
-import {
-  BookmarkIcon,
-  ExternalLinkIcon,
-  HeartIcon,
-} from "@radix-ui/react-icons";
+import { ExternalLinkIcon } from "@radix-ui/react-icons";
 import { Book } from "@/types/BookType";
 import Link from "next/link";
 
