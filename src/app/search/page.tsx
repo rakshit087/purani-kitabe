@@ -1,14 +1,24 @@
+import { search } from "@/actions/search";
 import { SearchForm } from "@/components/SearchForm/SearchForm";
 import { SearchResultsGrid } from "@/components/SearchResultsGrid";
-import { SearchResultsLoading } from "@/components/SearchResultsLoading";
-import { Suspense } from "react";
+import { getQueryClient } from "@/get-query-client";
+import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
 
-export default function SearchResults({
+
+export default async function SearchResults({
   searchParams,
 }: {
   searchParams: { q: string };
 }) {
   const query = searchParams.q;
+  const cleanedQuery = query.toLowerCase().replace(/[^a-z0-9\s]/g, "");
+  const queryClient = getQueryClient();
+
+  await queryClient.prefetchQuery({
+    queryKey: ["search", cleanedQuery],
+    queryFn: () => search(cleanedQuery)
+  });
+
   return (
     <main className="flex min-h-[100dvh] flex-col items-center py-16 lg:py-24 px-4 md:px-6 lg:px-8">
       <div className="max-w-3xl w-full">
@@ -18,9 +28,9 @@ export default function SearchResults({
           </a>
         </div>
         <SearchForm value={query} />
-        <Suspense key={query} fallback={<SearchResultsLoading />}>
+        <HydrationBoundary state={dehydrate(queryClient)}>
           <SearchResultsGrid query={query} />
-        </Suspense>
+        </HydrationBoundary>
       </div>
     </main>
   );
