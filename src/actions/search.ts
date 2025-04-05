@@ -7,7 +7,8 @@ import { searchLockTheBox } from "./_lockthebox";
 import { searchSecondHandBooksIndia } from "./_secondHandBooksIndia";
 import redis from "@/lib/redis";
 
-export const search = async (query: string) => {
+
+export const search = async (query: string): Promise<Book[]> => {
   const cleanedQuery = query.toLowerCase().replace(/[^a-z0-9\s]/g, "");
 
   if (!cleanedQuery) {
