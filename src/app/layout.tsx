@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/ThemeProvider/ThemeProvider";
 import { ThemeToggle } from "@/components/ThemeToggle/ThemeToggle";
 import Link from "next/link";
+import QueryProvider from "@/components/query-client";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -30,7 +31,7 @@ export default function RootLayout({
           <div className="absolute top-8 right-8">
             <ThemeToggle />
           </div>
-          {children}
+          <QueryProvider>{children}</QueryProvider> 
           <footer className="py-4 text-center">
             <p className="text-xs">
               Made for the ❤️ of books by{" "}
