@@ -8,12 +8,14 @@ import { searchSecondHandBooksIndia } from "./_secondHandBooksIndia";
 import redis from "@/lib/redis";
 
 export const search = async (query: string) => {
-  if (!query) {
+  const cleanedQuery = query.toLowerCase().replace(/[^a-z0-9\s]/g, "");
+
+  if (!cleanedQuery) {
     console.error("No search query provided");
     return [];
   }
 
-  const cachedResults = await redis.get(`search:${query}`);
+  const cachedResults = await redis.get(`search:${cleanedQuery}`);
   if (cachedResults) {
     return JSON.parse(cachedResults);
   }
@@ -89,7 +91,12 @@ export const search = async (query: string) => {
           return a.price - b.price;
         });
 
-      await redis.set(`search:${query}`, JSON.stringify(sortedBooks), "EX", 86400);
+      await redis.set(
+        `search:${cleanedQuery}`,
+        JSON.stringify(sortedBooks),
+        "EX",
+        86400
+      );
 
       return sortedBooks;
     } catch (err) {
