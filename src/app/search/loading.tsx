@@ -1,11 +1,7 @@
 import { SearchForm } from "@/components/SearchForm/SearchForm";
 import { SearchResultsLoading } from "@/components/SearchResultsLoading";
 
-export default async function SearchResults({
-  searchParams,
-}: {
-  searchParams: { q: string };
-}) {
+export default async function SearchResults() {
   return (
     <main className="flex min-h-[100dvh] flex-col items-center py-16 lg:py-24 px-4 md:px-6 lg:px-8">
       <div className="max-w-3xl w-full">
@@ -14,7 +10,7 @@ export default async function SearchResults({
             <strong>पुरानी</strong> Kitabe
           </a>
         </div>
-        <SearchForm value={searchParams.q} />
+        <SearchForm value={""} loading={true} />
         <SearchResultsLoading />
       </div>
     </main>
