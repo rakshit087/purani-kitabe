@@ -60,7 +60,7 @@ export const searchSecondHandBooksIndia = async (
             title: titleMatch[1].trim(),
             author: authorMatch[1].trim(),
             price,
-            productUrl: `https://www.secondhandbooksindia.com${href}`,
+            productUrl: `${href}`,
             bookCover: $image.attr("data-original") || "",
             source: "Second Hand Books India",
           };
