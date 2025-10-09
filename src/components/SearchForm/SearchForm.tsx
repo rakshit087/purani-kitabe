@@ -52,6 +52,9 @@ export function SearchForm(props: SearchFormI) {
                   placeholder="Search by Title, Author or ISBN"
                   {...field}
                   disabled={props.loading}
+                  autoComplete="off"
+                  autoCorrect="off"
+                  aria-autocomplete="none"
                 />
               </FormControl>
               <FormMessage />
