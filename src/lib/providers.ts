@@ -32,6 +32,7 @@ import redis from "@/lib/redis";
 // preloved-kids-books, old-hardcover). See PROVIDERS_RESEARCH.md Tier A #13.
 
 export const PROVIDER_TIMEOUT_MS = 5000;
+const SEARCH_CACHE_VERSION = "v2";
 
 export type Provider = {
   name: string;
@@ -98,7 +99,9 @@ export const searchProviderCached = async (
   query: string
 ): Promise<Book[]> => {
   const cleanedQuery = query.toLowerCase().replace(/[^a-z0-9\s]/g, "");
-  const cacheKey = `search:${slugify(provider.name)}:${cleanedQuery}`;
+  const cacheKey = `search:${SEARCH_CACHE_VERSION}:${slugify(
+    provider.name
+  )}:${cleanedQuery}`;
 
   try {
     // Cap cache lookup latency so a slow/half-dead Redis can never delay
@@ -116,7 +119,7 @@ export const searchProviderCached = async (
 
   const books = await withTimeout(provider, query);
 
-  const ttl = books.length === 0 ? 3600 : 86400;
+  const ttl = books.length === 0 ? 60 : 86400;
   // Fire-and-forget: caching must never delay the response.
   redis.set(cacheKey, JSON.stringify(books), "EX", ttl).catch((err) => {
     console.error(`Redis set failed for ${cacheKey}:`, err);
