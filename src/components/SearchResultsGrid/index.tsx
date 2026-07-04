@@ -1,79 +1,95 @@
 "use client";
 
-import { search } from "@/actions/search";
 import { BookCard } from "../BookCard/BookCard";
-import { useQuery } from "@tanstack/react-query";
 import { SearchResultsLoading } from "../SearchResultsLoading";
-import { motion, AnimatePresence } from "motion/react";
-import { useEffect, useState } from "react";
+import { motion } from "motion/react";
+import { useSearchStream } from "@/hooks/useSearchStream";
 
 export function SearchResultsGrid(props: { query: string }) {
+  const { books, completed, total, isStreaming, isError } = useSearchStream(
+    props.query
+  );
 
-  const [queryKey, setQueryKey] = useState(props.query); 
-  
-  useEffect(() => {
-    setQueryKey(props.query);
-  }, [props.query]);
-  
-  const { data: result, isLoading, isError } = useQuery({
-    queryKey: ["search", props.query],
-    queryFn: () => search(props.query),
-    staleTime: 24 * 60 * 60 * 1000,
-  });
+  const showInitialLoading = isStreaming && books.length === 0;
+  const showNoResults = !showInitialLoading && !isStreaming && books.length === 0;
+  const showErrorNoResults = isError && books.length === 0;
+
+  if (showInitialLoading) {
+    return (
+      <motion.div
+        key="loading"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.2 }}
+      >
+        <SearchResultsLoading />
+      </motion.div>
+    );
+  }
+
+  if (showNoResults || showErrorNoResults) {
+    return (
+      <motion.div
+        className="mt-16 text-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
+        <p className="font-serif text-xl italic text-foreground">
+          Out of print, out of stock.
+        </p>
+        <p className="mt-2 text-sm text-muted-foreground">
+          No used copies found for “{props.query}”. Try a different spelling or
+          the ISBN.
+        </p>
+      </motion.div>
+    );
+  }
+
+  const pct = total > 0 ? (completed / total) * 100 : 0;
 
   return (
-    <AnimatePresence mode="wait" key={queryKey}>
-      {isLoading ? (
-        <motion.div
-          key="loading"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          <SearchResultsLoading />
-        </motion.div>
-      ) : null}
-      
-      {result && result.length === 0 || isError ? (
-        <motion.div 
-          key={`no-results-${queryKey}`}
-          className="text-center mt-8"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          No results found for &quot;{props.query}&quot;.
-        </motion.div>
-      ) : null}
-      
-      {result && result.length > 0 && (
-        <motion.div 
-          key={`results-grid-${queryKey}`}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 w-full mt-16"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
-          transition={{ duration: 0.3 }}
-        >
-          {result.map((book, index) => (
-            <motion.div
-              key={`book-${queryKey}-${index}`}
-              initial={{ opacity: 0, scale: 0.98 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ 
-                duration: 0.3, 
-                delay: 0.1 + Math.min(index, 5) * 0.05,
-                exit: { duration: 0.2, delay: 0 }
-              }}
-            >
-              <BookCard book={book} />
-            </motion.div>
-          ))}
-        </motion.div>
+    <div className="w-full">
+      {isStreaming && (
+        <div className="w-full">
+          <p className="mb-2 font-mono text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+            Leafing through {total} sellers · {completed}/{total}
+          </p>
+          <div className="h-[3px] w-full overflow-hidden rounded-full bg-muted">
+            <div
+              className="h-full rounded-full bg-primary transition-all duration-500 ease-out"
+              style={{ width: `${pct}%` }}
+            />
+          </div>
+        </div>
       )}
-    </AnimatePresence>
+
+      {books.length > 0 && (
+        <p className="mt-6 font-mono text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+          {books.length} {books.length === 1 ? "copy" : "copies"} found
+        </p>
+      )}
+
+      <motion.div
+        className="mt-4 grid w-full grid-cols-2 gap-4 md:grid-cols-3 md:gap-5"
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
+        {books.map((book, index) => (
+          <motion.div
+            key={`${book.title.trim().toLowerCase()}|${book.source}|${book.productUrl}`}
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{
+              duration: 0.3,
+              delay: 0.05 * Math.min(index, 5),
+            }}
+          >
+            <BookCard book={book} />
+          </motion.div>
+        ))}
+      </motion.div>
+    </div>
   );
 }

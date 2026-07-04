@@ -1,9 +1,7 @@
-import { search } from "@/actions/search";
+import { redirect } from "next/navigation";
 import { SearchForm } from "@/components/SearchForm/SearchForm";
 import { SearchResultsGrid } from "@/components/SearchResultsGrid";
-import { getQueryClient } from "@/get-query-client";
-import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-
+import { Wordmark } from "@/components/Wordmark/Wordmark";
 
 export default async function SearchResults({
   searchParams,
@@ -11,27 +9,22 @@ export default async function SearchResults({
   searchParams: { q: string };
 }) {
   const query = searchParams.q;
-  const cleanedQuery = query.toLowerCase().replace(/[^a-z0-9\s]/g, "");
-  const queryClient = getQueryClient();
 
-  await queryClient.prefetchQuery({
-    queryKey: ["search", cleanedQuery],
-    queryFn: () => search(cleanedQuery)
-  });
+  if (!query) {
+    redirect("/");
+  }
 
   return (
-    <main className="flex min-h-[100dvh] flex-col items-center py-16 lg:py-24 px-4 md:px-6 lg:px-8">
-      <div className="max-w-3xl w-full">
-        <div className="mb-4">
-          <a className="text-2xl md:text-4xl font-serif" href="/">
-            <strong>पुरानी</strong> Kitabe
-          </a>
-        </div>
+    <main className="mx-auto flex min-h-[100dvh] w-full max-w-3xl flex-col px-5 py-12 md:px-6 md:py-16">
+      <header className="mb-8 flex flex-col gap-6 border-b border-border/70 pb-8">
+        <Wordmark size="sm" />
         <SearchForm value={query} />
-        <HydrationBoundary state={dehydrate(queryClient)}>
-          <SearchResultsGrid query={query} />
-        </HydrationBoundary>
-      </div>
+        <p className="font-serif text-sm italic text-muted-foreground">
+          Showing used copies of{" "}
+          <span className="text-foreground">“{query}”</span> across India.
+        </p>
+      </header>
+      <SearchResultsGrid query={query} />
     </main>
   );
 }
