@@ -13,10 +13,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
+import { ArrowRightIcon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 
 const formSchema = z.object({
   query: z.string().min(2, {
-    message: "Please enter atleast 2 characters",
+    message: "Please enter at least 2 characters",
   }),
 });
 
@@ -38,32 +39,46 @@ export function SearchForm(props: SearchFormI) {
   }
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="flex gap-4 w-full"
-      >
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
         <FormField
           control={form.control}
           name="query"
           render={({ field }) => (
-            <FormItem className="flex-1">
-              <FormControl>
-                <Input
-                  placeholder="Search by Title, Author or ISBN"
-                  {...field}
+            <FormItem className="space-y-1.5">
+              {/* catalog card: ruled field with an inset search tab */}
+              <div className="group flex items-center gap-2 rounded-lg border border-input bg-card/70 pl-3.5 pr-1.5 shadow-sm transition-colors focus-within:border-primary/60 focus-within:ring-2 focus-within:ring-ring/40">
+                <MagnifyingGlassIcon className="h-4 w-4 shrink-0 text-muted-foreground" />
+                <FormControl>
+                  <Input
+                    placeholder="Search by title, author or ISBN"
+                    {...field}
+                    disabled={props.loading}
+                    autoComplete="off"
+                    autoCorrect="off"
+                    aria-autocomplete="none"
+                    className="h-12 flex-1 border-0 bg-transparent px-0 text-base shadow-none focus-visible:ring-0"
+                  />
+                </FormControl>
+                <Button
+                  type="submit"
                   disabled={props.loading}
-                  autoComplete="off"
-                  autoCorrect="off"
-                  aria-autocomplete="none"
-                />
-              </FormControl>
-              <FormMessage />
+                  size="sm"
+                  className="my-1 h-9 gap-1.5 px-4 font-mono text-xs uppercase tracking-wider"
+                >
+                  {props.loading ? (
+                    "…"
+                  ) : (
+                    <>
+                      Search
+                      <ArrowRightIcon className="h-3.5 w-3.5" />
+                    </>
+                  )}
+                </Button>
+              </div>
+              <FormMessage className="font-mono text-xs" />
             </FormItem>
           )}
         />
-        <Button type="submit" disabled={props.loading} className="w-24">
-          {props.loading ? "..." : "Search"}
-        </Button>
       </form>
     </Form>
   );

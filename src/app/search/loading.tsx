@@ -1,18 +1,15 @@
 import { SearchForm } from "@/components/SearchForm/SearchForm";
 import { SearchResultsLoading } from "@/components/SearchResultsLoading";
+import { Wordmark } from "@/components/Wordmark/Wordmark";
 
 export default async function SearchResults() {
   return (
-    <main className="flex min-h-[100dvh] flex-col items-center py-16 lg:py-24 px-4 md:px-6 lg:px-8">
-      <div className="max-w-3xl w-full">
-        <div className="mb-4">
-          <a className="text-2xl md:text-4xl font-serif" href="/">
-            <strong>पुरानी</strong> Kitabe
-          </a>
-        </div>
+    <main className="mx-auto flex min-h-[100dvh] w-full max-w-3xl flex-col px-5 py-12 md:px-6 md:py-16">
+      <header className="mb-8 flex flex-col gap-6 border-b border-border/70 pb-8">
+        <Wordmark size="sm" />
         <SearchForm value={""} loading={true} />
-        <SearchResultsLoading />
-      </div>
+      </header>
+      <SearchResultsLoading />
     </main>
   );
 }
