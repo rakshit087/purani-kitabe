@@ -42,10 +42,10 @@ export function BookCard({ book }: BookCardI) {
           {book.source || "Unknown seller"}
         </span>
 
-        <h3 className="font-serif text-base font-medium leading-snug text-foreground">
+        <h3 className="line-clamp-2 font-serif text-base font-medium leading-snug text-foreground">
           {book.title}
         </h3>
-        <p className="mt-0.5 text-sm text-muted-foreground">
+        <p className="mt-0.5 line-clamp-1 text-sm text-muted-foreground">
           {book.author ? `by ${book.author}` : "Author unknown"}
         </p>
 
