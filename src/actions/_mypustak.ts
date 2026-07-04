@@ -22,8 +22,9 @@ const payload = (query: string, page: number) => {
         collection: "books_collection",
         facet_by:
           "agedGroup,author,binding,bookCondition,language,price,publication",
-        filter_by: "isOutOfStock:N && bookType:[3]",
-        facet_filter_by: "isOutOfStock:N && bookType:[3]",
+        // Preloved-only: exclude brand-new stock, see PROVIDERS_RESEARCH.md
+        filter_by: "isOutOfStock:N && bookType:[3] && bookCondition:!=BrandNew",
+        facet_filter_by: "isOutOfStock:N && bookType:[3] && bookCondition:!=BrandNew",
         page: page,
       },
     ],
@@ -70,15 +71,26 @@ export const searchMyPustak = async (query: string) => {
             const title = book.document.title;
             const author = book.document.author;
             const price = book.document.price;
-            const productUrl = book.document.productUrl;
-            const bookCover = book.document.imageUrl;
+            const slug = book.document.slug;
+            const bookId = book.document.bookId;
             const isbn = book.document.isbn;
             const source = "MyPustak";
 
-            if (!title || !author || !price || !productUrl) {
+            if (!title || !author || !price || !slug || !bookId) {
               console.warn("Missing required book data from MyPustak");
               return null;
             }
+
+            // productUrl field was removed from the schema; the site's real
+            // product URL is /book/<slug>-<isbn>?<bookId>= (verified live)
+            const productUrl = `https://www.mypustak.com/book/${slug}${
+              isbn ? `-${isbn}` : ""
+            }?${bookId}=`;
+
+            // bookThumb is a relative path, e.g. "medium/cropped_X.jpg"
+            const bookCover = book.document.bookThumb
+              ? `https://d3osa46pggpx5f.cloudfront.net/${book.document.bookThumb}`
+              : "";
 
             if (book.document.isOutOfStock === "N") {
               return {

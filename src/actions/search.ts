@@ -3,10 +3,90 @@
 import { Book } from "@/types/BookType";
 import { searchMyPustak } from "./_mypustak";
 import lunr from "lunr";
-import { searchLockTheBox } from "./_lockthebox";
 import { searchSecondHandBooksIndia } from "./_secondHandBooksIndia";
+import { searchWorthing } from "./_worthing";
+import { searchKitabay } from "./_kitabay";
+import { search99BooksCart } from "./_99bookscart";
+import { searchPustakkosh } from "./_pustakkosh";
+import { searchBookmafiya } from "./_bookmafiya";
+import { searchAnjaniBooks } from "./_anjanibooks";
+import { searchWishAllBook } from "./_wishallbook";
+import { searchUsedBookStore } from "./_usedbookstore";
+import { searchOldBookShop } from "./_oldbookshop";
+import { searchUsedBooksWorld } from "./_usedbooksworld";
+import { searchBlossomBookHouse } from "./_blossombookhouse";
+import { searchBookChor } from "./_bookchor";
+import { searchUsedBooksFactory } from "./_usedbooksfactory";
+import { searchBooksByKilo } from "./_booksbykilo";
+import { searchUsedbookr } from "./_usedbookr";
+import { searchBestOfUsedBooks } from "./_bestofusedbooks";
+import { searchBookaao } from "./_bookaao";
+import { searchClankart } from "./_clankart";
+import { searchStarterGroup } from "./_startergroup";
+import { searchBuyUsedBooks } from "./_buyusedbooks";
+import { searchBookmandee } from "./_bookmandee";
+import { searchBookFlow } from "./_bookflow";
 import redis from "@/lib/redis";
 
+// eLocalshops (elocalshops.com) intentionally NOT wired up yet: its
+// site-wide Shopify search mixes new stock with preloved, and getting a
+// preloved-only result set requires intersecting the search results with
+// several preloved collections (preloved-books-1, used-books,
+// preloved-kids-books, old-hardcover). See PROVIDERS_RESEARCH.md Tier A #13.
+
+const PROVIDER_TIMEOUT_MS = 8000;
+
+type Provider = {
+  name: string;
+  fn: (query: string) => Promise<Book[]>;
+};
+
+const providers: Provider[] = [
+  { name: "MyPustak", fn: searchMyPustak },
+  { name: "Second Hand Books India", fn: searchSecondHandBooksIndia },
+  { name: "Worthing", fn: searchWorthing },
+  { name: "Kitabay", fn: searchKitabay },
+  { name: "99bookscart", fn: search99BooksCart },
+  { name: "Pustakkosh", fn: searchPustakkosh },
+  { name: "Bookmafiya", fn: searchBookmafiya },
+  { name: "AnjaniBooks", fn: searchAnjaniBooks },
+  { name: "WishAllBook", fn: searchWishAllBook },
+  { name: "UsedBookStore.in", fn: searchUsedBookStore },
+  { name: "OldBookShop", fn: searchOldBookShop },
+  { name: "UsedBooksWorld", fn: searchUsedBooksWorld },
+  { name: "Blossom Book House", fn: searchBlossomBookHouse },
+  { name: "BookChor", fn: searchBookChor },
+  { name: "UsedBooksFactory", fn: searchUsedBooksFactory },
+  { name: "BooksByKilo", fn: searchBooksByKilo },
+  { name: "Usedbookr", fn: searchUsedbookr },
+  { name: "BestOfUsedBooks", fn: searchBestOfUsedBooks },
+  { name: "Bookaao", fn: searchBookaao },
+  { name: "Clankart (P2P)", fn: searchClankart },
+  { name: "StarterGroup", fn: searchStarterGroup },
+  { name: "BuyUsedBooks.in", fn: searchBuyUsedBooks },
+  { name: "Bookmandee (P2P)", fn: searchBookmandee },
+  { name: "BookFlow (P2P)", fn: searchBookFlow },
+];
+
+const withTimeout = async (
+  provider: Provider,
+  query: string
+): Promise<Book[]> => {
+  try {
+    return await Promise.race([
+      provider.fn(query),
+      new Promise<Book[]>((_, reject) =>
+        setTimeout(
+          () => reject(new Error(`${provider.name} timed out`)),
+          PROVIDER_TIMEOUT_MS
+        )
+      ),
+    ]);
+  } catch (err) {
+    console.error(`Error fetching from ${provider.name}:`, err);
+    return [];
+  }
+};
 
 export const search = async (query: string): Promise<Book[]> => {
   const cleanedQuery = query.toLowerCase().replace(/[^a-z0-9\s]/g, "");
@@ -22,37 +102,21 @@ export const search = async (query: string): Promise<Book[]> => {
   }
 
   try {
-    // Fetch books from all sources in parallel with improved error handling
-    let myPustakBooks: Book[] = [];
-    let lockTheBoxBooks: Book[] = [];
-    let secondHandBooksIndia: Book[] = [];
+    const settled = await Promise.allSettled(
+      providers.map((provider) => withTimeout(provider, query))
+    );
 
-    try {
-      [myPustakBooks, lockTheBoxBooks, secondHandBooksIndia] =
-        await Promise.all([
-          searchMyPustak(query).catch((err) => {
-            console.error("Error fetching from MyPustak:", err);
-            return [];
-          }),
-          searchLockTheBox(query).catch((err) => {
-            console.error("Error fetching from Lock The Box:", err);
-            return [];
-          }),
-          searchSecondHandBooksIndia(query).catch((err) => {
-            console.error("Error fetching from Second Hand Books India:", err);
-            return [];
-          }),
-        ]);
-    } catch (err) {
-      console.error("Error in Promise.all for book sources:", err);
-      // Continue with any results we have
-    }
-
-    const books = [
-      ...myPustakBooks,
-      ...lockTheBoxBooks,
-      ...secondHandBooksIndia,
-    ];
+    const books: Book[] = [];
+    settled.forEach((result, i) => {
+      if (result.status === "fulfilled") {
+        books.push(...result.value);
+      } else {
+        console.error(
+          `Provider ${providers[i].name} rejected:`,
+          result.reason
+        );
+      }
+    });
 
     if (books.length === 0) {
       console.warn("No books found from any source");
