@@ -46,7 +46,7 @@ export default function RootLayout({
         <QueryProvider>{children}</QueryProvider>
         <footer className="border-t border-border/60 py-6 text-center">
           <p className="font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground">
-            Made for the ❤️ of books by{" "}
+            Made for the 💛 of books by{" "}
             <Link
               href="https://twitter.com/rakshit087"
               target="_blank"
