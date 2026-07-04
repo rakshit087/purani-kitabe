@@ -5,6 +5,7 @@ import { Button } from "../ui/button";
 import { ArrowTopRightIcon } from "@radix-ui/react-icons";
 import { Book } from "@/types/BookType";
 import Link from "next/link";
+import { trackSellerClick } from "@/lib/analytics";
 
 const PLACEHOLDER =
   "https://placehold.co/600x700?text=Cover+Not+Found";
@@ -63,7 +64,13 @@ export function BookCard({ book }: BookCardI) {
 
         <div className="mt-4 flex-1" />
 
-        <Link href={book.productUrl} target="_blank" className="w-full">
+        <Link
+          href={book.productUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full"
+          onClick={() => trackSellerClick(book)}
+        >
           <Button className="w-full gap-1.5 font-mono text-xs uppercase tracking-wider">
             Buy
             <ArrowTopRightIcon className="h-3.5 w-3.5" />

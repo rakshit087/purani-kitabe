@@ -2,6 +2,11 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
+Copy `.env.example` to `.env.local` and set `NEXT_PUBLIC_GA_MEASUREMENT_ID`
+to your free Google Analytics 4 measurement ID, for example `G-XXXXXXXXXX`.
+Outbound buy clicks are sent as the `seller_click` event with `seller`,
+`website`, `product_url`, `book_title`, `isbn`, and `price` parameters.
+
 First, run the development server:
 
 ```bash

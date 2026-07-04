@@ -8,6 +8,7 @@ import {
 import "./globals.css";
 import Link from "next/link";
 import QueryProvider from "@/components/query-client";
+import { GoogleAnalytics } from "@/components/GoogleAnalytics/GoogleAnalytics";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const newsreader = Newsreader({
@@ -56,6 +57,7 @@ export default function RootLayout({
             </Link>
           </p>
         </footer>
+        <GoogleAnalytics />
       </body>
     </html>
   );
