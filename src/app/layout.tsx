@@ -81,7 +81,7 @@ export default function RootLayout({
       >
         <QueryProvider>{children}</QueryProvider>
         <footer className="border-t border-border/60 py-6 text-center">
-          <p className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
+          <p className="inline-flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground sm:text-xs">
             <span>Made for the 💚 of books by Rakshit</span>
             <Link
               href="https://twitter.com/rakshit087"
