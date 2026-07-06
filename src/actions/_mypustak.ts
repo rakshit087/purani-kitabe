@@ -38,9 +38,12 @@ export const searchMyPustak = async (query: string) => {
   }
 
   try {
-    const url = `https://${process.env["TYPESENSE_URL"]}/multi_search?x-typesense-api-key=${process.env["TYPESENSE_API_KEY"]}`;
+    const typesenseUrl = process.env["TYPESENSE_URL"];
+    const typesenseApiKey =
+      process.env["TYPESENSE_API_KEY"];
+    const url = `https://${typesenseUrl}/multi_search?x-typesense-api-key=${typesenseApiKey}`;
 
-    if (!process.env["TYPESENSE_API_KEY"]) {
+    if (!typesenseApiKey) {
       throw new Error("Typesense API key not found");
     }
 
