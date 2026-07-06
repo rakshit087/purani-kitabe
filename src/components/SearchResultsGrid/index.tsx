@@ -1,19 +1,16 @@
 "use client";
 
-import {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useMemo, useState } from "react";
 import { BookCard } from "../BookCard/BookCard";
 import { SearchResultsLoading } from "../SearchResultsLoading";
 import { motion } from "motion/react";
 import { useSearchStream } from "@/hooks/useSearchStream";
-import { useWindowVirtualizer } from "@tanstack/react-virtual";
-import { Book } from "@/types/BookType";
+import { Button } from "../ui/button";
+
+const PAGE_SIZE = 50;
+const SORT_OPTIONS = ["Relevance", "Price", "Title"] as const;
+
+type SortOption = (typeof SORT_OPTIONS)[number];
 
 const getBookKey = (book: {
   title: string;
@@ -21,75 +18,45 @@ const getBookKey = (book: {
   productUrl: string;
 }) => `${book.title.trim().toLowerCase()}|${book.source}|${book.productUrl}`;
 
-const getColumnCount = () => {
-  if (typeof window === "undefined") {
-    return 2;
-  }
-
-  return window.matchMedia("(min-width: 768px)").matches ? 3 : 2;
-};
-
 export function SearchResultsGrid(props: { query: string }) {
-  const listRef = useRef<HTMLDivElement | null>(null);
-  const [columnCount, setColumnCount] = useState(getColumnCount);
-  const [listOffset, setListOffset] = useState(0);
+  const [sortBy, setSortBy] = useState<SortOption>("Relevance");
+  const [page, setPage] = useState(1);
   const { books, completed, total, isStreaming, isError } = useSearchStream(
     props.query
   );
 
-  const rows = useMemo(() => {
-    const nextRows: Book[][] = [];
-
-    for (let index = 0; index < books.length; index += columnCount) {
-      nextRows.push(books.slice(index, index + columnCount));
+  const sortedBooks = useMemo(() => {
+    if (sortBy === "Relevance") {
+      return books;
     }
 
-    return nextRows;
-  }, [books, columnCount]);
+    const relevanceIndex = new Map(
+      books.map((book, index) => [getBookKey(book), index])
+    );
 
-  const rowVirtualizer = useWindowVirtualizer({
-    count: rows.length,
-    estimateSize: () => (columnCount === 3 ? 500 : 440),
-    overscan: 10,
-    scrollMargin: listOffset,
-    directDomUpdates: true,
-    directDomUpdatesMode: "transform",
-  });
+    return [...books].sort((first, second) => {
+      const firstIndex = relevanceIndex.get(getBookKey(first)) ?? 0;
+      const secondIndex = relevanceIndex.get(getBookKey(second)) ?? 0;
 
-  const updateLayout = useCallback(() => {
-    const list = listRef.current;
+      if (sortBy === "Price") {
+        const priceDiff = first.price - second.price;
+        return priceDiff || firstIndex - secondIndex;
+      }
 
-    setColumnCount(getColumnCount());
-    setListOffset(list ? list.getBoundingClientRect().top + window.scrollY : 0);
-  }, []);
+      return (
+        first.title.localeCompare(second.title, undefined, {
+          sensitivity: "base",
+        }) || firstIndex - secondIndex
+      );
+    });
+  }, [books, sortBy]);
 
-  const setListNode = useCallback(
-    (node: HTMLDivElement | null) => {
-      listRef.current = node;
-      rowVirtualizer.containerRef(node);
-    },
-    [rowVirtualizer]
-  );
-
-  useLayoutEffect(() => {
-    updateLayout();
-    window.addEventListener("resize", updateLayout);
-
-    const observer = new ResizeObserver(updateLayout);
-    if (listRef.current) {
-      observer.observe(listRef.current);
-    }
-
-    return () => {
-      window.removeEventListener("resize", updateLayout);
-      observer.disconnect();
-    };
-  }, [updateLayout]);
+  const visibleBooks = sortedBooks.slice(0, page * PAGE_SIZE);
+  const hasMore = visibleBooks.length < sortedBooks.length;
 
   useEffect(() => {
-    updateLayout();
-    rowVirtualizer.measure();
-  }, [books.length, columnCount, isStreaming, rowVirtualizer, updateLayout]);
+    setPage(1);
+  }, [props.query, sortBy]);
 
   const showInitialLoading = isStreaming && books.length === 0;
   const showNoResults = !showInitialLoading && !isStreaming && books.length === 0;
@@ -146,39 +113,60 @@ export function SearchResultsGrid(props: { query: string }) {
       )}
 
       {books.length > 0 && (
-        <p className="mt-6 font-mono text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
-          {books.length} {books.length === 1 ? "copy" : "copies"} found
-        </p>
+        <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+            {books.length} {books.length === 1 ? "copy" : "copies"} found
+          </p>
+
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="mr-1 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground">
+              Sort
+            </span>
+            {SORT_OPTIONS.map((option) => (
+              <Button
+                key={option}
+                type="button"
+                variant={sortBy === option ? "default" : "outline"}
+                size="sm"
+                className="h-7 px-2.5 font-mono text-[10px] uppercase tracking-[0.12em]"
+                onClick={() => setSortBy(option)}
+              >
+                {option}
+              </Button>
+            ))}
+          </div>
+        </div>
       )}
 
       <motion.div
-        ref={setListNode}
-        className="relative mt-4 w-full [contain:layout_paint_style]"
+        className="mt-4 grid w-full grid-cols-2 gap-4 md:grid-cols-3 md:gap-5"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
-        {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-          const row = rows[virtualRow.index] ?? [];
-
-          return (
-            <div
-              key={virtualRow.key}
-              ref={rowVirtualizer.measureElement}
-              data-index={virtualRow.index}
-              className="absolute left-0 top-0 w-full pb-4 md:pb-5"
-            >
-              <div className="grid w-full grid-cols-2 gap-4 md:grid-cols-3 md:gap-5">
-                {row.map((book) => (
-                  <div key={getBookKey(book)}>
-                    <BookCard book={book} />
-                  </div>
-                ))}
-              </div>
-            </div>
-          );
-        })}
+        {visibleBooks.map((book) => (
+          <div key={getBookKey(book)} className="result-card-visibility h-full">
+            <BookCard book={book} />
+          </div>
+        ))}
       </motion.div>
+
+      {hasMore && (
+        <div className="mt-8 flex flex-col items-center gap-3">
+          <p className="font-mono text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+            Showing {visibleBooks.length} of {sortedBooks.length}
+          </p>
+          <Button
+            type="button"
+            variant="outline"
+            className="font-mono text-xs uppercase tracking-wider"
+            onClick={() => setPage((currentPage) => currentPage + 1)}
+          >
+            Show {Math.min(PAGE_SIZE, sortedBooks.length - visibleBooks.length)}{" "}
+            more
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

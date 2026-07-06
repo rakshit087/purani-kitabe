@@ -75,6 +75,11 @@
     border-left: 2px solid hsl(var(--binding) / 0.7);
     padding-left: 0.4rem;
   }
+
+  .result-card-visibility {
+    content-visibility: auto;
+    contain-intrinsic-size: 0 540px;
+  }
 }
 
 @layer utilities {
