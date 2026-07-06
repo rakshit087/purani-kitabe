@@ -9,6 +9,7 @@ import "./globals.css";
 import Link from "next/link";
 import QueryProvider from "@/components/query-client";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics/GoogleAnalytics";
+import { getSiteUrl, siteConfig } from "@/lib/seo";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const newsreader = Newsreader({
@@ -28,9 +29,43 @@ const tiro = Tiro_Devanagari_Hindi({
 });
 
 export const metadata: Metadata = {
-  title: "पुरानी Kitabe · secondhand books, every Indian seller",
-  description:
-    "Search for second hand books in India, across various sellers like MyPustak, 99Cart and Bookchor.",
+  metadataBase: getSiteUrl(),
+  applicationName: siteConfig.name,
+  title: {
+    default: siteConfig.title,
+    template: `%s · ${siteConfig.name}`,
+  },
+  description: siteConfig.description,
+  keywords: siteConfig.keywords,
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: siteConfig.name,
+    title: siteConfig.title,
+    description: siteConfig.description,
+    locale: "en_IN",
+  },
+  twitter: {
+    card: "summary",
+    creator: "@rakshit087",
+    title: siteConfig.title,
+    description: siteConfig.description,
+  },
+  category: "books",
 };
 
 export default function RootLayout({
