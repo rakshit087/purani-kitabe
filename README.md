@@ -1,43 +1,63 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# पुरानी Kitabe
 
-## Getting Started
+Find secondhand books in India without opening a dozen tabs.
 
-Copy `.env.example` to `.env.local` and set `NEXT_PUBLIC_GA_MEASUREMENT_ID`
-to your free Google Analytics 4 measurement ID, for example `G-XXXXXXXXXX`.
-Set `NEXT_PUBLIC_SITE_URL` to the public production URL so canonical links,
-`robots.txt`, and `sitemap.xml` point at the indexable domain.
-Outbound buy clicks are sent as the `seller_click` event with `seller`,
-`website`, `product_url`, `book_title`, `isbn`, and `price` parameters.
+पुरानी Kitabe lets you search across Indian used-book sellers from one place, compare available copies, and jump directly to the seller when you find the one you want.
 
-First, run the development server:
+## What You Can Do
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Search by book title, author, or ISBN.
+- Compare prices across multiple secondhand-book websites.
+- See results as they are found, instead of waiting for every seller to finish.
+- Open the seller's page directly to check condition, shipping, and availability.
+- Use title suggestions while typing to avoid spelling mistakes.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## How It Works
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+1. Search for a book, author, or ISBN.
+2. पुरानी Kitabe checks secondhand-book sellers across India.
+3. Matching copies are grouped and ranked by relevance.
+4. When scores are close, cheaper listings are shown first.
+5. Pick a listing and continue on the seller's website.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+पुरानी Kitabe is a search and comparison tool. Purchases, payments, shipping, returns, and customer support are handled by the seller you choose.
 
-## Learn More
+## Good Searches
 
-To learn more about Next.js, take a look at the following resources:
+Try searches like:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- `Harry Potter`
+- `Atomic Habits`
+- `Roald Dahl`
+- `9780141032009`
+- `Chetan Bhagat`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+For best results, use the exact title, author name, or ISBN if you have it.
 
-## Deploy on Vercel
+## Sellers Covered
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The search includes Indian used-book and pre-owned book sellers such as MyPustak, 99bookscart, BookChor, Kitabay, Pustakkosh, Bookmafiya, BooksByKilo, BookMandee, BookFlow, and more.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+Seller inventory changes often, so a result can occasionally sell out or change price by the time you open it. Always confirm price, condition, edition, and delivery charges on the seller's website before buying.
+
+## Result Details
+
+Each result may include:
+
+- Book title
+- Author
+- Price
+- Cover image
+- Seller name
+- ISBN, when available
+- Link to the seller's product page
+
+Some sellers provide less metadata than others, so not every listing will have a perfect cover, author, or ISBN.
+
+## Privacy
+
+Searches are used to fetch matching book listings. If analytics are enabled, पुरानी Kitabe may record basic usage events, such as when someone clicks through to a seller. Payments and account details are never handled by पुरानी Kitabe.
+
+## Feedback
+
+If a seller result looks wrong, a link is broken, or a useful used-book store is missing, open an issue or send feedback with the book you searched for and the seller result that looked incorrect.
