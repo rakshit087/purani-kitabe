@@ -9,6 +9,7 @@ import "./globals.css";
 import Link from "next/link";
 import QueryProvider from "@/components/query-client";
 import { GoogleAnalytics } from "@/components/GoogleAnalytics/GoogleAnalytics";
+import { InstagramLogoIcon, TwitterLogoIcon } from "@radix-ui/react-icons";
 import { getSiteUrl, siteConfig } from "@/lib/seo";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -80,15 +81,25 @@ export default function RootLayout({
       >
         <QueryProvider>{children}</QueryProvider>
         <footer className="border-t border-border/60 py-6 text-center">
-          <p className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
-            Made for the 💚 of books by{" "}
+          <p className="inline-flex items-center gap-2 font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
+            <span>Made for the 💚 of books by Rakshit</span>
             <Link
               href="https://twitter.com/rakshit087"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-foreground underline decoration-primary/50 underline-offset-4 transition-colors hover:decoration-primary"
+              aria-label="Connect on Twitter"
+              className="text-foreground transition-colors hover:text-primary"
             >
-              Rakshit
+              <TwitterLogoIcon className="h-4 w-4" />
+            </Link>
+            <Link
+              href="https://instagram.com/kitabi.corner"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Connect on Instagram"
+              className="text-foreground transition-colors hover:text-primary"
+            >
+              <InstagramLogoIcon className="h-4 w-4" />
             </Link>
           </p>
         </footer>
